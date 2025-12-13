@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About — Sachin Kumar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --ink: #111;
+      --gray: #777;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: none;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; height: auto; }
+
+    /* ---------- CURSOR ---------- */
+    .cursor {
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: difference;
+      transition: width 0.3s, height 0.3s, background 0.3s;
+    }
+    .cursor.hovered {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: none;
+    }
+
+    /* ---------- LAYOUT ---------- */
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    header {
+      height: 100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 14px;
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    nav a:hover { text-decoration: line-through; }
+
+    /* ---------- ABOUT GRID ---------- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+      gap: 80px;
+      margin-bottom: 120px;
+    }
+
+    .about-title {
+      font-size: clamp(36px, 4.5vw, 72px);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      margin-bottom: 30px;
+    }
+
+    .about-lede {
+      font-size: 16px;
+      color: var(--gray);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .about-body {
+      font-size: 15px;
+      color: var(--gray);
+      line-height: 1.75;
+      max-width: 620px;
+    }
+
+    .about-body p + p { margin-top: 18px; }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin: 42px 0 10px;
+      color: var(--ink);
+    }
+
+    .about-body ul { list-style: none; }
+    .about-body li + li { margin-top: 6px; }
+
+    /* ---------- PORTRAIT ---------- */
+    .portrait-wrap {
+      position: relative;
+      width: 260px;
+      margin-top: 40px;
+      perspective: 800px;
+    }
+
+    .portrait-frame {
+      position: relative;
+      border: 1px solid var(--ink);
+      padding: 6px;
+      background: #fff;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .portrait-frame img {
+      filter: saturate(1.05) contrast(1.02);
+      transform: translateZ(20px);
+    }
+
+    .frame-shadow {
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--ink);
+      opacity: 0.2;
+      transform: translate(8px, 8px);
+      pointer-events: none;
+    }
+
+    /* orbit line */
+    .orbit-line {
+      position: absolute;
+      inset: -26px;
+      border-radius: 50%;
+      border-top: 1px solid var(--ink);
+      opacity: 0.35;
+      animation: spin 10s linear infinite;
+      pointer-events: none;
+    }
+
+    .portrait-wrap:hover .orbit-line {
+      animation-play-state: paused;
+    }
+
+    .portrait-caption {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-top: 12px;
+      color: var(--gray);
+    }
+
+    /* ---------- META ---------- */
+    .meta-block {
+      margin-top: 40px;
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .meta-block strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      border-top: 1px solid #ddd;
+      padding: 40px 0;
+      margin-top: 80px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--gray);
+      letter-spacing: 0.1em;
+    }
+
+    /* ---------- ANIM ---------- */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 50px; }
+      .portrait-wrap { width: 220px; }
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 20px; }
+      .about-title { font-size: 36px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="page">
+  <header>
+    <div class="brand">Sachin Kumar</div>
+    <nav>
+      <a href="index.html">Work</a>
+      <a href="about.html">About</a>
+      <a href="mailto:youremail@example.com">Contact</a>
+    </nav>
+  </header>
+
+  <main class="about-grid">
+    <section>
+      <h1 class="about-title">Sachin Kumar — photographer</h1>
+
+      <p class="about-lede">
+        I like images that feel observational and honest — built from real light,
+        real people and the small in–between moments on the way from one place to another.
+      </p>
+
+      <div class="about-body">
+        <p>
+          I’m Sachin, a photographer and traveller from India. My work lives somewhere
+          between travel, streets and intimate portraits — sometimes even the quieter
+          side of weddings.
+        </p>
+
+        <p>
+          A lot of my photographs come from solo trips, long walks and unplanned detours:
+          bus stands, chai stops, back alleys, early-morning markets and those half–awake
+          hours before the day properly begins.
+        </p>
+
+        <p>
+          When I’m shooting for clients, I try to keep the same energy: calm, observant
+          and respectful of the space.
+        </p>
+
+        <div class="section-label">Selected focus</div>
+        <ul>
+          <li>Travel journeys & road stories</li>
+          <li>Streets, markets & everyday life</li>
+          <li>Intimate weddings & smaller gatherings</li>
+          <li>Portraits & people–led editorial work</li>
+        </ul>
+
+        <div class="section-label">Currently</div>
+        <p>
+          Based in India, open to travel for assignments — especially projects involving
+          movement, landscapes and slower storytelling.
+        </p>
+      </div>
+    </section>
+
+    <aside>
+      <div class="portrait-wrap" id="portraitWrap">
+        <div class="orbit-line"></div>
+        <div class="portrait-frame" id="portraitFrame">
+          <img src="images/portrait.jpg" alt="Sachin Kumar portrait">
+          <div class="frame-shadow"></div>
+        </div>
+        <div class="portrait-caption">Sachin Kumar · Photographer</div>
+      </div>
+
+      <div class="meta-block">
+        <strong>Contact</strong>
+        youremail@example.com
+      </div>
+
+      <div class="meta-block">
+        <strong>Available for</strong>
+        Travel stories, streets, portraits, intimate weddings and editorial work.
+      </div>
+
+      <div class="meta-block">
+        <strong>Notes</strong>
+        Comfortable travelling solo, light on gear, happy to blend into the background.
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> Sachin Kumar</div>
+    <div>Photography · Travel · People</div>
+  </footer>
+</div>
+
+<script>
+  // year
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // cursor
+  const cursor = document.getElementById("cursor");
+  document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+  });
+  document.querySelectorAll("a").forEach(el => {
+    el.addEventListener("mouseenter", () => cursor.classList.add("hovered"));
+    el.addEventListener("mouseleave", () => cursor.classList.remove("hovered"));
+  });
+
+  // portrait mouse parallax
+  const wrap = document.getElementById("portraitWrap");
+  const frame = document.getElementById("portraitFrame");
+
+  wrap.addEventListener("mousemove", e => {
+    const r = wrap.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    frame.style.transform = `rotateY(${x / 30}deg) rotateX(${-y / 30}deg)`;
+  });
+
+  wrap.addEventListener("mouseleave", () => {
+    frame.style.transform = "rotateX(0) rotateY(0)";
+  });
+
+  // scroll stop align
+  let scrollTimeout;
+  window.addEventListener("scroll", () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      frame.style.transform = "rotateX(0) rotateY(0)";
+    }, 150);
+  });
+</script>
+
+</body>
+</html>

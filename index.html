@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sachin Kumar | Photographer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --ink: #111;
+      --gray: #777;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      cursor: none;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; height: auto; }
+
+    /* ---------------- CURSOR ---------------- */
+    .cursor {
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: difference;
+      transition: width 0.3s, height 0.3s, background 0.3s;
+    }
+
+    .cursor.hovered {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: none;
+    }
+
+    /* ---------------- LAYOUT ---------------- */
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    header {
+      height: 100px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 14px;
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    nav a:hover { text-decoration: line-through; }
+
+    /* ---------------- HERO ---------------- */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      min-height: 80vh;
+      align-items: center;
+      margin-bottom: 100px;
+    }
+
+    .hero-title {
+      font-size: clamp(40px, 5vw, 80px);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      margin-bottom: 30px;
+      line-height: 1;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--gray);
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* ---------------- HERO IMAGE (ANIMATED) ---------------- */
+    .hero-image-wrap {
+      position: relative;
+      height: 80vh;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .hero-frame {
+      position: relative;
+      height: 100%;
+      padding: 8px;
+      border: 1px solid var(--ink);
+      background: #fff;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .hero-frame img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      transform: translateZ(30px) scale(1.06);
+      transition: transform 1.4s ease;
+    }
+
+    .hero-image-wrap:hover img {
+      transform: translateZ(30px) scale(1);
+    }
+
+    .hero-frame-orbit {
+      position: absolute;
+      inset: -14px;
+      border: 1px solid var(--ink);
+      opacity: 0.25;
+      animation: orbitFrame 14s linear infinite;
+      pointer-events: none;
+    }
+
+    .hero-orbit-line {
+      position: absolute;
+      inset: -28px;
+      border-radius: 50%;
+      border-top: 1px solid var(--ink);
+      opacity: 0.35;
+      animation: spin 10s linear infinite;
+      pointer-events: none;
+    }
+
+    .hero-image-wrap:hover .hero-orbit-line {
+      animation-play-state: paused;
+    }
+
+    @keyframes orbitFrame {
+      from { transform: rotate(0deg) translate(0,0); }
+      to   { transform: rotate(360deg) translate(6px,6px); }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ---------------- GALLERY (UNCHANGED) ---------------- */
+    .gallery-masonry {
+      column-count: 3;
+      column-gap: 24px;
+    }
+
+    .gallery-item {
+      display: block;
+      margin-bottom: 24px;
+      break-inside: avoid;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.6s ease-out;
+    }
+
+    .gallery-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-item img {
+      filter: grayscale(100%);
+      transition: filter 0.3s;
+    }
+
+    .gallery-item:hover img {
+      filter: grayscale(0%);
+    }
+
+    /* ---------------- LIGHTBOX (FIXED, NO STRETCH) ---------------- */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.96);
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    footer {
+      border-top: 1px solid #ddd;
+      padding: 40px 0;
+      margin-top: 80px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--gray);
+      letter-spacing: 0.1em;
+    }
+
+    @media (max-width: 900px) {
+      .hero-split { grid-template-columns: 1fr; }
+      .hero-image-wrap { height: 50vh; order: -1; }
+      .gallery-masonry { column-count: 2; }
+    }
+
+    @media (max-width: 600px) {
+      .page { padding: 0 20px; }
+      .gallery-masonry { column-count: 1; }
+      .hero-title { font-size: 40px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<div class="page">
+  <header>
+    <div class="brand">Sachin Kumar</div>
+    <nav>
+      <a href="#" id="workLink">Work</a>
+      <a href="about.html">About</a>
+      <a href="mailto:email@example.com">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero-split">
+    <div>
+      <h1 class="hero-title">
+        Framing the <br><em>unspoken</em> moment.
+      </h1>
+      <p class="hero-desc">
+        Documentary and editorial photography based in India.
+        Capturing the texture of daily life through an honest,
+        observational lens.
+      </p>
+    </div>
+
+    <div class="hero-image-wrap" id="heroWrap">
+      <div class="hero-orbit-line"></div>
+      <div class="hero-frame-orbit"></div>
+      <div class="hero-frame" id="heroFrame">
+        <img src="images/13.jpg" alt="Featured portrait">
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY: PRESERVED -->
+  <div class="gallery-masonry" id="gallery">
+    <a class="gallery-item" href="images/1.jpg"><img src="images/1.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/2.jpg"><img src="images/2.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/3.jpg"><img src="images/3.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/4.jpg"><img src="images/4.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/5.jpg"><img src="images/5.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/6.jpg"><img src="images/6.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/7.jpg"><img src="images/7.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/8.jpg"><img src="images/8.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/9.jpg"><img src="images/9.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/10.jpg"><img src="images/10.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/11.jpg"><img src="images/11.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/12.jpg"><img src="images/12.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/14.jpg"><img src="images/14.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/15.jpg"><img src="images/15.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/16.jpg"><img src="images/16.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/17.jpg"><img src="images/17.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/18.jpg"><img src="images/18.jpg" loading="lazy"></a>
+    <a class="gallery-item" href="images/19.jpg"><img src="images/19.jpg" loading="lazy"></a>
+  </div>
+
+  <footer>
+    <div>© <span id="year"></span> Sachin Kumar</div>
+    <div>India</div>
+  </footer>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close">✕</div>
+  <img id="lightboxImg" src="">
+</div>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  /* cursor */
+  const cursor = document.getElementById("cursor");
+  document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+  });
+
+  document.querySelectorAll("a, .gallery-item, .hero-image-wrap, .lightbox-close")
+    .forEach(el => {
+      el.addEventListener("mouseenter", () => cursor.classList.add("hovered"));
+      el.addEventListener("mouseleave", () => cursor.classList.remove("hovered"));
+    });
+
+  /* hero parallax */
+  const heroWrap = document.getElementById("heroWrap");
+  const heroFrame = document.getElementById("heroFrame");
+
+  heroWrap.addEventListener("mousemove", e => {
+    const r = heroWrap.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width / 2;
+    const y = e.clientY - r.top - r.height / 2;
+    heroFrame.style.transform =
+      `rotateY(${x / 40}deg) rotateX(${-y / 40}deg)`;
+  });
+
+  heroWrap.addEventListener("mouseleave", () => {
+    heroFrame.style.transform = "rotateX(0) rotateY(0)";
+  });
+
+  /* -------- LIGHTBOX (FIXED) -------- */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const lightboxClose = document.querySelector(".lightbox-close");
+
+  function openLightbox(src) {
+    lightboxImg.src = src;
+    lightbox.classList.add("active");
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("active");
+    lightboxImg.src = "";
+  }
+
+  // Gallery images
+  document.querySelectorAll(".gallery-item").forEach(item => {
+    item.addEventListener("click", e => {
+      e.preventDefault();
+      openLightbox(item.getAttribute("href"));
+    });
+  });
+
+  // Hero image
+  heroWrap.addEventListener("click", () => {
+    openLightbox(heroWrap.querySelector("img").src);
+  });
+
+  // Close actions
+  lightboxClose.addEventListener("click", e => {
+    e.stopPropagation();
+    closeLightbox();
+  });
+
+  lightbox.addEventListener("click", e => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && lightbox.classList.contains("active")) {
+      closeLightbox();
+    }
+  });
+
+  /* scroll reveal */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll(".gallery-item").forEach(item => observer.observe(item));
+
+  /* smooth scroll */
+  const workLink = document.getElementById("workLink");
+  const gallery = document.getElementById("gallery");
+  workLink.addEventListener("click", e => {
+    e.preventDefault();
+    gallery.scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+
+</body>
+</html>
